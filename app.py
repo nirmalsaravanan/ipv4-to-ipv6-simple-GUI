@@ -24,6 +24,15 @@ def convert_ipv6_to_ipv4(ipv6_address):
     except ipaddress.AddressValueError:
         error_message = "Invalid IPv6 address."
         return None, error_message
+        
+def convert_subnet(ip_subnet):
+    try:
+        subnet_obj = ipaddress.IPv4Network(ip_subnet, strict=False)
+        ipv6_subnet = subnet_obj.network_address.exploded
+        return ipv6_subnet, None
+    except ValueError as e:
+        error_message = str(e)
+        return None, error_message
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -38,7 +47,9 @@ def index():
             result, error_message = convert_ipv4_to_ipv6(ip_address)
         elif choice == "2":
             result, error_message = convert_ipv6_to_ipv4(ip_address)
-
+        elif choice == "3":
+            result, error_message = convert_subnet(ip_address)
+            
     return render_template('index.html', result=result, error_message=error_message)
 
 if __name__ == '__main__':
